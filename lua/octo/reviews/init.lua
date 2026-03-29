@@ -52,6 +52,7 @@ function Review:create(callback)
         callback(resp)
       end
     end,
+    progress = { title = "Creating review" },
   }
 end
 
@@ -70,6 +71,7 @@ function Review:populate_threads(callback)
           callback(resp)
         end
       end,
+      progress = { title = "Loading review threads" },
     },
   }
 end
@@ -105,6 +107,7 @@ function Review:retrieve(callback)
           callback(resp)
         end,
       },
+      progress = { title = "Retrieving review" },
     },
   }
 end

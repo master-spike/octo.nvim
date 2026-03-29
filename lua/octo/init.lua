@@ -191,6 +191,13 @@ function M.load(repo, kind, id, hostname, cb)
     end
   end
 
+  local progress_title = string.format("Loading %s", kind)
+  if id then
+    progress_title = string.format("Loading %s %s/%s", kind, repo, id)
+  else
+    progress_title = string.format("Loading %s/%s", kind, repo)
+  end
+
   gh.api.graphql {
     query = query,
     fields = fields,
@@ -199,6 +206,7 @@ function M.load(repo, kind, id, hostname, cb)
     hostname = hostname,
     opts = {
       cb = gh.create_callback { failure = utils.print_err, success = load_buffer },
+      progress = { title = progress_title },
     },
   }
 end

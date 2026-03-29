@@ -111,6 +111,9 @@ local M = {}
 ---@field notify_on_refresh boolean
 ---@field notify_on_change boolean
 
+---@class OctoConfigProgress
+---@field enabled boolean
+
 ---@class OctoConfigDebug
 ---@field notify_missing_timeline_items boolean
 
@@ -159,6 +162,7 @@ local M = {}
 ---@field notifications OctoConfigNotifications
 ---@field poll OctoConfigPoll
 ---@field debug OctoConfigDebug
+---@field progress OctoConfigProgress
 
 --- Returns the default octo config values
 ---@return OctoConfig
@@ -528,6 +532,9 @@ function M.get_default_values()
     debug = {
       notify_missing_timeline_items = false,
     },
+    progress = {
+      enabled = true,
+    },
   }
 end
 
@@ -714,6 +721,13 @@ function M.validate_config()
     validate_type(config.debug.notify_missing_timeline_items, "debug.notify_missing_timeline_items", "boolean")
   end
 
+  local function validate_progress()
+    if not validate_type(config.progress, "progress", "table") then
+      return
+    end
+    validate_type(config.progress.enabled, "progress.enabled", "boolean")
+  end
+
   if validate_type(config, "base config", "table") then
     validate_type(config.use_local_fs, "use_local_fs", "boolean")
     validate_type(config.enable_builtin, "enable_builtin", "boolean")
@@ -771,6 +785,7 @@ function M.validate_config()
     validate_mappings()
     validate_poll()
     validate_debug()
+    validate_progress()
   end
 
   return errors
