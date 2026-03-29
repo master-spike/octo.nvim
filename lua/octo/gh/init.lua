@@ -157,6 +157,7 @@ end
 ---@field headers? string[]
 ---@field hostname? string
 ---@field debug? boolean
+---@field progress? { title: string, message?: string }
 ---@field [string] any
 
 ---Collect paginated `gh api --paginate` output into a JSON array, replicating
@@ -199,6 +200,12 @@ local function run(opts)
   opts = opts or {}
   local conf = config.values
   local mode = opts.mode or "async"
+
+  local progress_token = nil
+  if mode == "async" and opts.progress then
+    local progress = require "octo.progress"
+    progress_token = progress.begin(opts.progress.title, opts.progress.message)
+  end
 
   -- Strip --slurp and handle it natively so octo works with gh CLI < 2.29.0.
   local do_slurp = false
@@ -257,6 +264,9 @@ local function run(opts)
         end
         local stderr = table.concat(j_self:stderr_result(), "\n")
         opts.cb(output, stderr, status)
+      end
+      if progress_token then
+        require("octo.progress").finish(progress_token)
       end
     end),
     env = env,
@@ -430,6 +440,7 @@ function M.api.graphql(opts)
     headers = run_opts.headers,
     hostname = run_opts.hostname,
     debug = run_opts.debug,
+    progress = run_opts.progress,
   }
 end
 
@@ -500,6 +511,7 @@ local function rest(method, opts)
     headers = run_opts.headers,
     hostname = run_opts.hostname,
     debug = run_opts.debug,
+    progress = run_opts.progress,
   }
 end
 
@@ -570,6 +582,7 @@ local function create_subcommand(command)
           headers = run_opts.headers,
           hostname = run_opts.hostname,
           debug = run_opts.debug,
+          progress = run_opts.progress,
         }
       end
     end,
