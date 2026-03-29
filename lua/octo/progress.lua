@@ -19,6 +19,8 @@ local function ensure_client()
         dispatchers.on_init({ capabilities = {} })
       end)
       return {
+        request = function(_, _, _) end,
+        notify = function(_, _) end,
         write = function() end,
         is_closing = function() return false end,
         terminate = function() end,
